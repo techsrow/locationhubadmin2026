@@ -104,25 +104,38 @@ export default function MakeupArtistPage() {
  const handleDragEnd = async (event: any) => {
   const { active, over } = event;
 
-  if (!over) return;
+  if (!over || active.id === over.id) return;
 
-  if (active.id !== over.id) {
-    const oldIndex = items.findIndex((i) => i.id === active.id);
-    const newIndex = items.findIndex((i) => i.id === over.id);
+  const oldIndex = items.findIndex(
+    (i) => i.id === active.id
+  );
 
-    const newItems = arrayMove(items, oldIndex, newIndex);
-    setItems(newItems);
+  const newIndex = items.findIndex(
+    (i) => i.id === over.id
+  );
 
-    try {
-      await axios.put("/makeup-artist/reorder", {
-        items: newItems.map((i) => ({ id: i.id })),
-      });
+  const newItems = arrayMove(
+    items,
+    oldIndex,
+    newIndex
+  );
 
-      alert("Order updated successfully 🔄✅");
-    } catch (error) {
-      console.error("Reorder failed:", error);
-      alert("Reorder failed ❌");
-    }
+  setItems(newItems);
+
+  const payload = newItems.map((item, index) => ({
+    id: item.id,
+    displayOrder: index + 1,
+  }));
+
+  try {
+    await axios.put("/makeup-artist/reorder", {
+      items: payload,
+    });
+
+    alert("Display Order Updated Successfully ✅");
+  } catch (error) {
+    console.error("Reorder failed:", error);
+    alert("Reorder failed ❌");
   }
 };
 
