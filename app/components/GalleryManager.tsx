@@ -35,6 +35,7 @@ function SortableItem({
   titleKey,
   onDelete,
   onPreview,
+  onEdit,
 }: any) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: image.id });
@@ -77,13 +78,23 @@ function SortableItem({
 
       
 
-      <button
-        type="button"
-        onClick={() => onDelete(image.id)}
-        className="w-full bg-red-500 hover:bg-red-600 text-white py-2 transition"
-      >
-        Delete
-      </button>
+     <div className="grid grid-cols-2">
+  <button
+    type="button"
+    onClick={() => onEdit(image)}
+    className="bg-blue-500 hover:bg-blue-600 text-white py-2 transition font-medium"
+  >
+    Edit
+  </button>
+
+  <button
+    type="button"
+    onClick={() => onDelete(image.id)}
+    className="bg-red-500 hover:bg-red-600 text-white py-2 transition font-medium"
+  >
+    Delete
+  </button>
+</div>
     </div>
   );
 }
@@ -105,6 +116,9 @@ export default function GalleryManager({
 }) {
   const [title, setTitle] = useState("");
   const [pageUrl, setPageUrl] = useState("");
+  const [editId, setEditId] = useState<string | null>(null);
+const [selectedFile, setSelectedFile] = useState<File | null>(null);
+const [previewImage, setPreviewImage] = useState("");
 
   const [images, setImages] = useState<any[]>([]);
   
@@ -133,34 +147,39 @@ export default function GalleryManager({
     fetchImages();
   }, []);
 
-  /* ================= UPLOAD ================= */
 
-  // const handleUpload = async (e: any) => {
-  //   try {
-  //     setLoading(true);
+const handleEdit = (item: any) => {
+  setSelectedFile(null);
+  setEditId(item.id);
+  setTitle(item.title || "");
+  setPageUrl(item.pageUrl || "");
+  setPreviewImage(getFileUrl(item[imageKey]));
 
-  //     const formData = new FormData();
-  //     for (let file of e.target.files) {
-  //       formData.append("image", file);
-  //     }
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
 
-  //     await api.post(`/${endpoint}`, formData);
+const resetForm = () => {
+  setEditId(null);
+  setTitle("");
+  setPageUrl("");
+  setSelectedFile(null);
+  setPreviewImage("");
+};
 
-  //     toast.success("Upload successful");
-  //     fetchImages();
-  //   } catch (error) {
-  //     console.error(error);
-  //     toast.error("Upload failed");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-const handleUpload = async (e: any) => {
+const handleSave = async () => {
   try {
     setLoading(true);
 
     if (showTitle && !title) {
       toast.error("Title is required");
+      return;
+    }
+
+    if (showPageUrl && !pageUrl) {
+      toast.error("Page URL is required");
       return;
     }
 
@@ -170,32 +189,39 @@ const handleUpload = async (e: any) => {
       formData.append("title", title);
     }
 
-     if (showPageUrl && !pageUrl) {
-      toast.error("Page URL is required");
-      return;
-    }
-
     if (showPageUrl) {
       formData.append("pageUrl", pageUrl);
     }
 
-
-    for (let file of e.target.files) {
-      formData.append("image", file);
+    if (selectedFile) {
+      formData.append("image", selectedFile);
     }
 
-    await api.post(`/${endpoint}`, formData);
+    if (editId) {
+      await api.put(`/${endpoint}/${editId}`, formData);
 
-    toast.success("Upload successful");
-    setTitle("");
+      toast.success("Updated successfully");
+    } else {
+      if (!selectedFile) {
+        toast.error("Please select image");
+        return;
+      }
+
+      await api.post(`/${endpoint}`, formData);
+
+      toast.success("Created successfully");
+    }
+
+    resetForm();
     fetchImages();
-
   } catch (error) {
-    toast.error("Upload failed");
+    console.error(error);
+    toast.error("Save failed");
   } finally {
     setLoading(false);
   }
 };
+
 
 
   /* ================= DELETE ================= */
@@ -283,13 +309,48 @@ const handleUpload = async (e: any) => {
     </p>
 
     <input
-      type="file"
-      onChange={handleUpload}
-      className="hidden"
-    />
+  type="file"
+  className="hidden"
+  onChange={(e) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
+    setSelectedFile(file);
+    setPreviewImage(URL.createObjectURL(file));
+  }}
+/>
   </label>
 
+{previewImage && (
+  <div className="mt-4">
+    <img
+      src={previewImage}
+      alt="Preview"
+      className="w-40 h-40 object-cover rounded-lg border"
+    />
+  </div>
+)}
 
+<div className="flex gap-3 mt-4">
+  <button
+    type="button"
+    onClick={handleSave}
+    className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded"
+  >
+    {editId ? "Update Add-On" : "Create Add-On"}
+  </button>
+
+  {editId && (
+    <button
+      type="button"
+      onClick={resetForm}
+      className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded"
+    >
+      Cancel
+    </button>
+  )}
+</div>
 </div>
 
 
@@ -316,13 +377,14 @@ const handleUpload = async (e: any) => {
           <div className="grid grid-cols-4 gap-8">
             {images.map((img) => (
               <SortableItem
-                key={img.id}
-                image={img}
-                imageKey={imageKey}
-                titleKey="title"
-                onDelete={(id: string) => setDeleteId(id)}
-                onPreview={(image: any) => setPreview(image)}
-              />
+  key={img.id}
+  image={img}
+  imageKey={imageKey}
+  titleKey="title"
+  onDelete={(id: string) => setDeleteId(id)}
+  onPreview={(image: any) => setPreview(image)}
+  onEdit={handleEdit}
+/>
             ))}
           </div>
         </SortableContext>
