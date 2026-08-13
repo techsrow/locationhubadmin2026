@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import api from "@/lib/api";
+import toast from "react-hot-toast";
 
 import {
   DndContext,
@@ -46,20 +47,36 @@ export default function TestimonialPage() {
   };
 
   const handleDragEnd = async (event: any) => {
-    const { active, over } = event;
+  const { active, over } = event;
 
-    if (!over || active.id === over.id) return;
+  if (!over || active.id === over.id) return;
 
-    const oldIndex = items.findIndex((i) => i.id === active.id);
-    const newIndex = items.findIndex((i) => i.id === over.id);
+  const oldIndex = items.findIndex((i) => i.id === active.id);
+  const newIndex = items.findIndex((i) => i.id === over.id);
 
-    const newItems = arrayMove(items, oldIndex, newIndex);
-    setItems(newItems);
+  const newItems = arrayMove(items, oldIndex, newIndex);
+  setItems(newItems);
 
+  try {
     await api.put("/testimonials/reorder", {
-      items: newItems.map((item) => ({ id: item.id })),
+      items: newItems.map((item) => ({
+        id: item.id,
+      })),
     });
-  };
+
+   // alert("Display order updated successfully");
+
+    // OR if using react-hot-toast:
+  toast.success("Display order updated successfully");
+  } catch (error) {
+    console.error(error);
+
+    //alert("Failed to update display order");
+
+    // OR:
+    toast.error("Failed to update display order");
+  }
+};
 
   const handleDelete = async (id: string) => {
     if (!confirm("Delete this testimonial?")) return;
