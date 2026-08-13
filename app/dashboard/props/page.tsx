@@ -14,7 +14,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { getFileUrl } from "@/lib/fileUrl";
-
+import toast from "react-hot-toast";
 
 interface PropsItem {
   id: string;
@@ -46,16 +46,32 @@ export default function PropsPage() {
   const handleDragEnd = async (event: any) => {
     const { active, over } = event;
 
-    if (active.id !== over.id) {
-      const oldIndex = items.findIndex(i => i.id === active.id);
-      const newIndex = items.findIndex(i => i.id === over.id);
+    if (!over || active.id === over.id) return;
 
-      const newItems = arrayMove(items, oldIndex, newIndex);
-      setItems(newItems);
+    const oldIndex = items.findIndex((i) => i.id === active.id);
+    const newIndex = items.findIndex((i) => i.id === over.id);
 
+    const newItems = arrayMove(items, oldIndex, newIndex);
+    setItems(newItems);
+
+    try {
       await api.put("/props/reorder", {
-        items: newItems.map(i => ({ id: i.id })),
+        items: newItems.map((i) => ({
+          id: i.id,
+        })),
       });
+
+     
+
+      // Better:
+      toast.success("Display order updated successfully");
+    } catch (error) {
+      console.error(error);
+
+    
+
+      // Better:
+      toast.error("Failed to update display order");
     }
   };
 
@@ -72,14 +88,13 @@ export default function PropsPage() {
       </div>
 
       <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={items.map(i => i.id)} strategy={verticalListSortingStrategy}>
+        <SortableContext
+          items={items.map((i) => i.id)}
+          strategy={verticalListSortingStrategy}
+        >
           <div className="grid gap-4">
-            {items.map(item => (
-              <SortableItem
-                key={item.id}
-                item={item}
-                onDelete={handleDelete}
-              />
+            {items.map((item) => (
+              <SortableItem key={item.id} item={item} onDelete={handleDelete} />
             ))}
           </div>
         </SortableContext>
@@ -106,13 +121,14 @@ function SortableItem({ item, onDelete }: any) {
       {...attributes}
       className="border p-4 rounded flex items-center gap-4 bg-white shadow"
     >
-      <div {...listeners} className="cursor-move text-gray-500">☰</div>
+      <div {...listeners} className="cursor-move text-gray-500">
+        ☰
+      </div>
 
-     <img
-  src={getFileUrl(`uploads/${item.image}`)}
-  className="w-20 h-20 object-cover rounded"
-/>
-
+      <img
+        src={getFileUrl(`uploads/${item.image}`)}
+        className="w-20 h-20 object-cover rounded"
+      />
 
       <div className="flex-1">
         <h3 className="font-semibold">{item.title}</h3>
