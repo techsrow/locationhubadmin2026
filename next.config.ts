@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "api.pagedaddy.in",
+        hostname: "http://localhost:5000",
         pathname: "/uploads/**",
       },
     ],

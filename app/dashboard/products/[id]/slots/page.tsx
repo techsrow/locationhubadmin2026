@@ -131,7 +131,9 @@ export default function SlotManager() {
     if (!confirmDelete) return;
 
     try {
-      await api.delete(`/slots/${id}`);
+      
+      // await api.delete(`/slots/${id}`);
+      await api.delete(`/products/slot/${id}`);
       setSlots(slots.filter((s) => s.id !== id));
     } catch (err) {
       console.error("Delete failed", err);
