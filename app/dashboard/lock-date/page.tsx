@@ -10,6 +10,8 @@ type Product = {
   name: string;
 };
 
+
+
 export default function LockDatePage() {
  
   const [date, setDate] = useState("");
@@ -17,20 +19,30 @@ export default function LockDatePage() {
   const [loading, setLoading] = useState(false);
   const [lockedDates, setLockedDates] = useState([]);
 
+useEffect(() => {
+  loadLockedDates();
+}, []);
 
-
-  async function loadLockedDates() {
+ async function loadLockedDates() {
   try {
     const res = await api.get(
       "/bookings/admin/locked-dates"
     );
 
     setLockedDates(res.data.dates || []);
-
   } catch (error) {
     console.error(error);
   }
 }
+
+useEffect(() => {
+  loadLockedDates();
+}, []);
+
+
+
+
+
 
 
 async function unlockDate(date: string) {
