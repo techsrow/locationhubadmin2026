@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable react-hooks/immutability */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -9,143 +11,131 @@ type Product = {
 };
 
 export default function LockDatePage() {
-
   const [products, setProducts] = useState<Product[]>([]);
-  const [productId, setProductId] = useState("");
+  const [productId, setProductId] = useState<string>("ALL");
   const [date, setDate] = useState("");
   const [loading, setLoading] = useState(false);
 
-  /* -------------------------
-     Load Products
-  --------------------------*/
-
   useEffect(() => {
-
-    async function loadProducts() {
-
-      try {
-
-        const res = await api.get("/products");
-
-        setProducts(res.data);
-
-      } catch (error) {
-
-        console.error("Product load error", error);
-
-      }
-
-    }
-
     loadProducts();
-
   }, []);
 
-  /* -------------------------
-     Lock Date
-  --------------------------*/
+  async function loadProducts() {
+    try {
+      const res = await api.get("/products");
+
+      const data = Array.isArray(res.data)
+        ? res.data
+        : res.data?.data || [];
+
+      setProducts(data);
+    } catch (error) {
+      console.error("Product load error", error);
+    }
+  }
 
   async function lockDate() {
-
-    if (!productId || !date) {
-      alert("Select product and date");
+    if (!date) {
+      alert("Please select a date");
       return;
     }
 
     try {
-
       setLoading(true);
 
-      const res = await api.post("/bookings/admin/lock-date", {
-        productId,
-        date
-      });
+      const res = await api.post(
+        "/bookings/admin/lock-date",
+        {
+          productId,
+          date,
+        }
+      );
 
       if (res.data.success) {
+        alert(res.data.message);
 
-        alert("Date locked successfully");
-
+        setDate("");
       }
-
-    } catch (error) {
-
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to lock date");
 
+      alert(
+        error?.response?.data?.message ||
+          "Failed to lock date"
+      );
     } finally {
-
       setLoading(false);
-
     }
-
   }
 
   return (
-
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-
-      <div className="bg-white shadow rounded p-8 w-full max-w-md">
-
-        <h1 className="text-2xl font-semibold mb-6 text-[#5a0f2e]">
+    <div className="flex justify-center items-center min-h-screen bg-gray-100 p-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-lg">
+        <h1 className="text-4xl font-bold text-[#5a0f2e] mb-8">
           Lock Booking Date
         </h1>
 
-        {/* PRODUCT */}
-        <div className="mb-4">
-
-          <label className="block mb-1 font-medium">
+        <div className="mb-5">
+          <label className="block mb-2 text-lg font-medium">
             Product
           </label>
 
           <select
             value={productId}
-            onChange={(e) => setProductId(e.target.value)}
-            className="border p-2 w-full rounded"
+            onChange={(e) =>
+              setProductId(e.target.value)
+            }
+            className="w-full border rounded-lg p-3"
           >
+            <option value="ALL">
+              🔒 All Products
+            </option>
 
-            <option value="">Select product</option>
-
-            {products.map((p) => (
-
-              <option key={p.id} value={p.id}>
-                {p.name}
+            {products.map((product) => (
+              <option
+                key={product.id}
+                value={product.id}
+              >
+                {product.name}
               </option>
-
             ))}
-
           </select>
-
         </div>
 
-        {/* DATE */}
-        <div className="mb-6">
+        {productId === "ALL" && (
+          <div className="mb-5 p-3 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+            This will lock the selected date
+            for ALL products and ALL slots.
+          </div>
+        )}
 
-          <label className="block mb-1 font-medium">
+        <div className="mb-6">
+          <label className="block mb-2 text-lg font-medium">
             Date
           </label>
 
           <input
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="border p-2 w-full rounded"
+            onChange={(e) =>
+              setDate(e.target.value)
+            }
+            className="w-full border rounded-lg p-3"
           />
-
         </div>
-
-        {/* BUTTON */}
 
         <button
           onClick={lockDate}
           disabled={loading}
-          className="w-full bg-[#5a0f2e] text-white py-2 rounded hover:bg-[#3d0a1f]"
+          className="w-full bg-[#5a0f2e] text-white py-3 rounded-lg font-medium hover:bg-[#430b22]"
         >
-          {loading ? "Locking..." : "Lock Date"}
+          {loading
+            ? "Locking..."
+            : productId === "ALL"
+            ? "Lock Date For All Products"
+            : "Lock Date"}
         </button>
-
       </div>
-
     </div>
-
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -77,10 +78,13 @@ const deleteProduct = async (id: string) => {
           <thead className="bg-gray-100">
             <tr>
               <th className="p-3">Product</th>
+                <th className="p-3">Slug</th>
               <th className="p-3">Price</th>
-              <th className="p-3">Booking Amount</th>
+             
               <th className="p-3">Slots</th>
               <th className="p-3">Actions</th>
+              <th></th>
+              <th></th>
             </tr>
           </thead>
 
@@ -88,7 +92,7 @@ const deleteProduct = async (id: string) => {
 
             {products.length === 0 && (
               <tr>
-                <td colSpan={5} className="text-center p-6 text-gray-500">
+                <td colSpan={6} className="text-center p-6 text-gray-500">
                   No products found
                 </td>
               </tr>
@@ -102,12 +106,29 @@ const deleteProduct = async (id: string) => {
                 </td>
 
                 <td className="p-3">
+  <div className="flex items-center gap-2">
+    <span className="text-gray-600">
+      {product.slug}
+    </span>
+
+    <button
+      type="button"
+      onClick={() => {
+        navigator.clipboard.writeText(product.slug);
+        alert("Slug copied!");
+      }}
+      className="text-blue-600 text-sm hover:underline"
+    >
+      Copy
+    </button>
+  </div>
+</td>
+
+                <td className="p-3">
                   ₹{product.price}
                 </td>
 
-                <td className="p-3">
-                  ₹{product.bookingAmount}
-                </td>
+                
 
                 <td className="p-3">
                   {product.slots?.length || 0}
@@ -134,6 +155,17 @@ const deleteProduct = async (id: string) => {
   className="text-red-600 hover:underline"
 >
   Delete
+</button>
+<button
+  onClick={() => {
+    navigator.clipboard.writeText(
+      `/products/${product.slug}`
+    );
+    alert("Product URL copied!");
+  }}
+  className="text-purple-600 hover:underline"
+>
+  Get URL
 </button>
 
                 </td>

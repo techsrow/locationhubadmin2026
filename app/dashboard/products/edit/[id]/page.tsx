@@ -12,6 +12,7 @@ export default function EditProductPage() {
 
   const [form, setForm] = useState({
     name: "",
+    slug: "",
     price: "",
     bookingAmount: "",
   });
@@ -28,11 +29,12 @@ export default function EditProductPage() {
     try {
       const res = await api.get(`/products/id/${productId}`);
 
-      setForm({
-        name: res.data.name,
-        price: String(res.data.price),
-        bookingAmount: String(res.data.bookingAmount),
-      });
+     setForm({
+  name: res.data.name,
+  slug: res.data.slug,
+  price: String(res.data.price),
+  bookingAmount: String(res.data.bookingAmount),
+});
 
     } catch (err) {
       console.error("Failed loading product", err);
@@ -78,6 +80,7 @@ export default function EditProductPage() {
 
       await api.put(`/products/${productId}`, {
         name: form.name,
+        slug: form.slug,
         price: Number(form.price),
         bookingAmount: Number(form.bookingAmount),
       });
@@ -129,6 +132,22 @@ export default function EditProductPage() {
             className="w-full border rounded px-3 py-2"
           />
         </div>
+
+
+        <div>
+  <label className="block text-sm font-medium mb-1">
+    Slug
+  </label>
+
+  <input
+    type="text"
+    name="slug"
+    value={form.slug}
+    onChange={handleChange}
+    className="w-full border rounded px-3 py-2"
+    placeholder="Leave as is or customize"
+  />
+</div>
 
         {/* Price */}
 
