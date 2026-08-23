@@ -45,7 +45,12 @@ export default function Sidebar() {
     { name: "Testimonial", path: "/dashboard/testimonial", icon: "⭐" },
     { name: "Props", path: "/dashboard/props", icon: "🎭" },
 
-    { name: "Make Up Artist", path: "/dashboard/makeup-artist", icon: "💄" }
+    { name: "Make Up Artist", path: "/dashboard/makeup-artist", icon: "💄" },
+    {
+  name: "Photo Gallery",
+  path: "/dashboard/gallery",
+  icon: "🖼️",
+}
 
   ];
 
