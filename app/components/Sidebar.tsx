@@ -50,7 +50,14 @@ export default function Sidebar() {
   name: "Photo Gallery",
   path: "/dashboard/gallery",
   icon: "🖼️",
-}
+},
+
+ {
+  name: "Pages",
+  path: "/dashboard/cms-pages",
+  icon: "🖼️",
+},
+
 
   ];
 
