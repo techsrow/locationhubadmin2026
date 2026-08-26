@@ -59,10 +59,10 @@ export default function Sidebar() {
 },
 
 {
-  name: "SEO Management",
-  path: "/seo",
+  name: "SEO",
+  path: "/dashboard/seo",
   icon: "🔍",
-}
+},
   ];
 
   return (
