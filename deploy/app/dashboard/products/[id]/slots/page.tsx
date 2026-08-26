@@ -85,17 +85,17 @@ const [editForm, setEditForm] = useState({
 
   /* ---------- PREVENT OVERLAP ---------- */
 
-  // function isOverlapping(start: string, end: string, slots: any[]) {
-  //   const newStart = new Date(`1970-01-01T${start}:00`);
-  //   const newEnd = new Date(`1970-01-01T${end}:00`);
+  function isOverlapping(start: string, end: string, slots: any[]) {
+    const newStart = new Date(`1970-01-01T${start}:00`);
+    const newEnd = new Date(`1970-01-01T${end}:00`);
 
-  //   return slots.some((slot) => {
-  //     const existingStart = new Date(`1970-01-01T${slot.startTime}:00`);
-  //     const existingEnd = new Date(`1970-01-01T${slot.endTime}:00`);
+    return slots.some((slot) => {
+      const existingStart = new Date(`1970-01-01T${slot.startTime}:00`);
+      const existingEnd = new Date(`1970-01-01T${slot.endTime}:00`);
 
-  //     return newStart < existingEnd && newEnd > existingStart;
-  //   });
-  // }
+      return newStart < existingEnd && newEnd > existingStart;
+    });
+  }
 
   const handleStartTimeChange = (value: string | null) => {
   setForm({
@@ -121,18 +121,18 @@ const handleEndTimeChange = (value: string | null) => {
     return;
   }
 
-  // if (
-  //   isOverlapping(
-  //     form.startTime,
-  //     form.endTime,
-  //     slots
-  //   )
-  // ) {
-  //   toast.error(
-  //     "Slot overlaps with existing slot"
-  //   );
-  //   return;
-  // }
+  if (
+    isOverlapping(
+      form.startTime,
+      form.endTime,
+      slots
+    )
+  ) {
+    toast.error(
+      "Slot overlaps with existing slot"
+    );
+    return;
+  }
 
   const label = generateLabel(
     form.startTime,

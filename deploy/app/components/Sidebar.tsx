@@ -58,11 +58,7 @@ export default function Sidebar() {
   icon: "🖼️",
 },
 
-{
-  name: "SEO Management",
-  path: "/seo",
-  icon: "🔍",
-}
+
   ];
 
   return (
