@@ -20,6 +20,12 @@ export default function BookingDetails() {
     setBooking(res.data);
   };
 
+  const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
 
   const total = Number(booking?.totalAmount || 0);
 const paid = Number(booking?.bookingAmount || 0);
@@ -133,25 +139,24 @@ Payment Summary
 <div className="grid grid-cols-2 gap-4 text-sm">
 
 <div>
-<strong>Package Price:</strong> ₹{packagePrice}
+  <strong>Package Price:</strong> ₹{formatCurrency(packagePrice)}
 </div>
 
 <div>
-<strong>GST:</strong> ₹{gst}
+  <strong>GST:</strong> ₹{formatCurrency(gst)}
 </div>
 
 <div className="font-semibold">
-<strong>Total Amount:</strong> ₹{total}
+  <strong>Total Amount:</strong> ₹{formatCurrency(total)}
 </div>
 
 <div className="text-green-600">
-<strong>Advance Paid:</strong> ₹{paid}
+  <strong>Advance Paid:</strong> ₹{formatCurrency(paid)}
 </div>
 
 <div className="text-red-600">
-<strong>Pending Amount:</strong> ₹{pending}
+  <strong>Pending Amount:</strong> ₹{formatCurrency(pending)}
 </div>
-
 </div>
 
 </div>

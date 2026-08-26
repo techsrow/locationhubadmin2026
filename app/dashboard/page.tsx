@@ -24,14 +24,22 @@ type DashboardData = {
   topPackages: { product: string; count: number }[];
 };
 
+
+
 export default function DashboardPage() {
 
   const [data, setData] = useState<DashboardData | null>(null);
 
+  const formatCurrency = (amount: number) =>
+  new Intl.NumberFormat("en-IN", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount);
+
   useEffect(() => {
 
     axios
-      .get("http://localhost:5000/api/analytics/dashboard")
+      .get("https://api.locationshub.in/api/analytics/dashboard")
       .then((res) => setData(res.data))
       .catch((err) => console.error(err));
 
@@ -51,9 +59,9 @@ export default function DashboardPage() {
 
         <Card title="Total Bookings" value={data.totalBookings} />
 
-        <Card title="Revenue" value={`₹${data.revenue}`} />
+        <Card title="Revenue" value={`₹${formatCurrency(data.revenue)}`} />
 
-        <Card title="Pending Payments" value={`₹${data.pendingPayments}`} />
+        <Card title="Pending Payments" value={`₹${formatCurrency(data.pendingPayments)}`} />
 
         <Card title="Today's Bookings" value={data.todayBookings} />
 
