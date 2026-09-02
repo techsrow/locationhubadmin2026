@@ -187,7 +187,7 @@ export default function GalleryPage() {
                         className="bg-white rounded-lg shadow p-4 flex items-center gap-5"
                       >
                         <img
-                          src={`http://localhost:5000${item.imageUrl}`}
+                          src={`${process.env.NEXT_PUBLIC_FILE_URL}${item.imageUrl}`}
                           alt=""
                           className="w-24 h-24 object-cover rounded border"
                         />
