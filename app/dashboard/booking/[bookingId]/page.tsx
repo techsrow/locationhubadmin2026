@@ -8,6 +8,19 @@ import { useParams } from "next/navigation";
 
 export default function BookingDetails() {
 
+
+  const formatDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-GB");
+
+const formatDateTime = (date: string) =>
+  new Date(date).toLocaleString("en-GB", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
   const { bookingId } = useParams();
   const [booking, setBooking] = useState<any>(null);
 
@@ -57,9 +70,14 @@ const pending = total - paid;
           </div>
 
           <div>
-            <strong>Date:</strong>{" "}
-            {new Date(booking.bookingDate).toLocaleDateString()}
-          </div>
+  <strong>Booked For:</strong>{" "}
+  {formatDate(booking.bookingDate)}
+</div>
+
+<div>
+  <strong>Booking Done On:</strong>{" "}
+  {formatDateTime(booking.createdAt)}
+</div>
 
           <div>
             <strong>Status:</strong> {booking.paymentStatus}
@@ -113,12 +131,26 @@ const pending = total - paid;
           </div>
 
           <div>
+  <strong>State:</strong> {booking.state || "-"}
+</div>
+
+          <div>
             <strong>Address:</strong> {booking.address}
           </div>
 
           <div>
             <strong>Postcode:</strong> {booking.postcode}
           </div>
+
+          <div>
+  <strong>Found Us Via:</strong>{" "}
+  {booking.source || "-"}
+</div>
+
+<div className="col-span-2">
+  <strong>Notes:</strong>{" "}
+  {booking.notes || "-"}
+</div>
 
         </div>
 
