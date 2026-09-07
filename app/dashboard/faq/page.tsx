@@ -2,10 +2,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { DndContext, closestCenter } from "@dnd-kit/core";
+import { faqApi } from "@/services/faq";
+
+import {
+  DndContext,
+  closestCenter,
+} from "@dnd-kit/core";
 
 import {
   SortableContext,
@@ -15,8 +20,6 @@ import {
 } from "@dnd-kit/sortable";
 
 import { CSS } from "@dnd-kit/utilities";
-
-import { faqApi } from "@/services/faq";
 
 interface FAQ {
   id: string;
@@ -51,10 +54,9 @@ function SortableItem({
     <div
       ref={setNodeRef}
       style={style}
-      className="border rounded p-4 bg-white flex justify-between items-center"
+      className="border rounded-lg p-4 bg-white flex justify-between items-center shadow-sm"
     >
       <div className="flex items-center gap-4 flex-1">
-        {/* Drag Handle */}
         <div
           {...attributes}
           {...listeners}
@@ -68,7 +70,7 @@ function SortableItem({
             {item.question}
           </h3>
 
-          <div className="mt-1">
+          <div className="mt-2">
             <span
               className={`px-2 py-1 rounded text-xs ${
                 item.isActive
@@ -93,10 +95,7 @@ function SortableItem({
         </Link>
 
         <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onDelete(item.id);
-          }}
+          onClick={() => onDelete(item.id)}
           className="text-red-600"
         >
           Delete
@@ -106,7 +105,7 @@ function SortableItem({
   );
 }
 
-export default function FAQPage() {
+export default function FaqPage() {
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -125,9 +124,7 @@ export default function FAQPage() {
     }
   };
 
-  const handleDelete = async (
-    id: string
-  ) => {
+  const handleDelete = async (id: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this FAQ?"
     );
@@ -138,9 +135,7 @@ export default function FAQPage() {
       await faqApi.delete(id);
 
       setFaqs((prev) =>
-        prev.filter(
-          (faq) => faq.id !== id
-        )
+        prev.filter((faq) => faq.id !== id)
       );
 
       alert("Deleted successfully ✅");
@@ -155,18 +150,15 @@ export default function FAQPage() {
   ) => {
     const { active, over } = event;
 
-    if (
-      !over ||
-      active.id === over.id
-    )
+    if (!over || active.id === over.id)
       return;
 
     const oldIndex = faqs.findIndex(
-      (i) => i.id === active.id
+      (faq) => faq.id === active.id
     );
 
     const newIndex = faqs.findIndex(
-      (i) => i.id === over.id
+      (faq) => faq.id === over.id
     );
 
     const newItems = arrayMove(
@@ -206,7 +198,7 @@ export default function FAQPage() {
 
   return (
     <div className="p-6">
-      <div className="flex justify-between mb-6">
+      <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold">
           FAQs
         </h1>
@@ -215,14 +207,12 @@ export default function FAQPage() {
           href="/dashboard/faq/create"
           className="bg-black text-white px-4 py-2 rounded"
         >
-          Add FAQ
+          + Add FAQ
         </Link>
       </div>
 
       <DndContext
-        collisionDetection={
-          closestCenter
-        }
+        collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
       >
         <SortableContext
@@ -238,9 +228,7 @@ export default function FAQPage() {
               <SortableItem
                 key={faq.id}
                 item={faq}
-                onDelete={
-                  handleDelete
-                }
+                onDelete={handleDelete}
               />
             ))}
           </div>
