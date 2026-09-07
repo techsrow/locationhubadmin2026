@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { videoApi } from "@/lib/video";
+import Link from "next/link";
 
 export default function VideosPage() {
   const [videos, setVideos] = useState([]);
@@ -23,6 +24,28 @@ setVideos(videos || []);
       setLoading(false);
     }
   };
+
+
+  const handleDelete = async (id: string) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this video?"
+  );
+
+  if (!confirmDelete) return;
+
+  try {
+    await videoApi.delete(id);
+
+    setVideos((prev: any) =>
+      prev.filter((video: any) => video.id !== id)
+    );
+
+    alert("Video deleted successfully");
+  } catch (error) {
+    console.error(error);
+    alert("Failed to delete video");
+  }
+};
 
   return (
     <div className="p-6">
@@ -72,14 +95,16 @@ setVideos(videos || []);
                 </td>
                 <td className="p-3 border">
   <div className="flex gap-2">
-    <button
-      className="px-3 py-1 bg-blue-600 text-white rounded"
+    <Link
+      href={`/dashboard/videos/edit/${video.id}`}
+      className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
     >
       Edit
-    </button>
+    </Link>
 
     <button
-      className="px-3 py-1 bg-red-600 text-white rounded"
+      onClick={() => handleDelete(video.id)}
+      className="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700"
     >
       Delete
     </button>
