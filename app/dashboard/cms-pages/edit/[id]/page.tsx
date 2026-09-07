@@ -5,7 +5,15 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import api from "@/lib/api";
-import TiptapEditor from "@/app/components/TiptapEditor";
+import dynamic from "next/dynamic";
+
+const CKEditorComponent = dynamic(
+  () => import("@/app/components/CKEditor"),
+  {
+    ssr: false,
+  }
+);
+
 
 export default function EditPage() {
   const router = useRouter();
@@ -220,15 +228,17 @@ export default function EditPage() {
             Content *
           </label>
 
-          <TiptapEditor
-            content={form.content}
-            onChange={(html) =>
-              setForm((prev) => ({
-                ...prev,
-                content: html,
-              }))
-            }
-          />
+         <div className="border rounded-lg overflow-hidden bg-white">
+  <CKEditorComponent
+  content={form.content}
+  onChange={(html) =>
+    setForm((prev) => ({
+      ...prev,
+      content: html,
+    }))
+  }
+/>
+</div>
 
           <p className="text-xs text-gray-500 mt-2">
             HTML is supported.

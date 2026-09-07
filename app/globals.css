@@ -24,3 +24,9 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+.ck-editor__editable {
+  min-height: 400px;
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
