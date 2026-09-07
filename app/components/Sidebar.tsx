@@ -63,6 +63,12 @@ export default function Sidebar() {
   path: "/dashboard/seo",
   icon: "🔍",
 },
+
+{
+  name: "Video Manager",
+  path: "/dashboard/videos",
+  icon: "🎥",
+}
   ];
 
   return (
